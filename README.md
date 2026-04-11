@@ -1,4 +1,4 @@
-# TinyReproduction: WAN / Network Anomaly Detection (ECE 570 Track 1)
+# TinyReproduction: WAN / Network Anomaly Detection
 
 Reproduction of core results from:
 
