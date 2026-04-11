@@ -1,0 +1,29 @@
+{
+  "time_col": "timestamp",
+  "group_cols": [
+    "site_id",
+    "link_id"
+  ],
+  "metrics": [
+    "latency_ms",
+    "jitter_ms",
+    "loss_pct",
+    "throughput_mbps",
+    "congestion_pct"
+  ],
+  "labeling": {
+    "method": "tukey_iqr",
+    "k": 1.5,
+    "min_breach_metrics": 1,
+    "label_noise_frac": 0.15
+  },
+  "feature_windows_min": [
+    15,
+    60,
+    360,
+    1440
+  ],
+  "freq_min": 15,
+  "train_frac": 0.7,
+  "random_state": 42
+}
