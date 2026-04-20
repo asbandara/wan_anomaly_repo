@@ -12,7 +12,9 @@
 \usepackage{multirow}
 \usepackage{comment}
 %\title{ML-Based WAN Anomaly Detection:\\A Minimalist Supervised Learning Framework}
-\title{Reproducing ML-Based Enterprise WAN Anomaly Detection: Feature Engineering Dominates Model Complexity}
+\title{ML-Based Enterprise WAN Anomaly Detection: \\
+Feature Engineering Dominates Model Complexity}
+%\title{Supervised ML for Enterprise WAN Anomaly Detection: A Reproduction Study}
 \author{Asanga Bandara}
 
 
@@ -26,81 +28,6 @@
 % ─────────────────────────────────────────────────────────────────────────────
 \begin{abstract}
 % ─────────────────────────────────────────────────────────────────────────────
-\begin{comment}
-Enterprise WAN anomaly detection remains a critical challenge: conventional
-rule-based threshold monitors fail to capture slow, multi-metric degradation
-patterns that precede service-level agreement breaches.
-\citet{schummer2024} propose a supervised machine
-learning framework addressing this gap, with two central claims---that
-non-linear models outperform a linear baseline, and that feature-engineering
-quality dominates model complexity.
-To verify these claims at minimal scale, a synthetic 80{,}640-sample
-multivariate WAN telemetry dataset is constructed with a realistic 16.4\%
-anomaly rate, and four classifiers are evaluated under a time-aware 70/30
-train/test split: Logistic Regression (linear baseline), Random Forest,
-SVM with RBF kernel, and a PyTorch MLP introduced as a deep-learning extension.
-All four models achieve Precision-Recall AUC (\prauc) of approximately
-0.310---roughly $2\times$ the random-classifier baseline of 0.164---confirming
-that temporal feature engineering carries genuine predictive signal.
-The spread across all classifiers is within 0.003 \prauc regardless of model
-complexity, directly corroborating the central claim that the feature
-representation, not the model family, is the binding performance constraint.
-A notable operational finding emerges: the MLP attains 35.6\% recall versus
-13.8\% for RF/SVM at the default decision threshold, a difference attributable
-to positive-class weighting in the binary cross-entropy loss and with direct
-implications for production deployment where missed anomalies carry higher cost
-than false alarms.
-Complete, self-contained code is provided, enabling full reproduction of all
-reported results in under ten minutes on a single CPU.
-%
-
-Enterprise wide area network (WAN) anomaly detection remains a significant challenge,
-as conventional rule-based threshold monitoring approaches often fail to detect gradual,
-multi-metric degradation patterns that precede breaches of service-level agreements.
-\citet{schummer2024} propose a supervised machine learning framework to address this
-gap, presenting two central claims: first, that non-linear models outperform a linear
-baseline; and second, that the quality of feature engineering has a greater impact than
-model complexity. To evaluate these claims at minimal scale, a synthetic multivariate
-WAN telemetry dataset comprising 80{,}640 samples is constructed with a realistic
-16.0\% anomaly rate. Four classifiers are evaluated using a time-aware 70/30 train/test
-split: Logistic Regression (linear baseline), Random Forest, SVM with RBF kernel, and a
-PyTorch MLP introduced as a deep-learning extension. All four models achieve
-Precision-Recall AUC (\prauc) of approximately 0.865---roughly $5.4\times$ the
-random-classifier baseline of 0.160---confirming that temporal feature engineering
-carries strong predictive signal. The spread across classifiers is within 0.013 \prauc
-regardless of model complexity, directly corroborating the claim that feature
-representation, not model family, is the binding performance constraint. A notable
-finding is that Logistic Regression achieves the highest \prauc (0.870), slightly
-exceeding Random Forest (0.868) and SVM (0.865), suggesting the non-linearity advantage
-reported in the original paper may require real-world telemetry complexity to emerge.
-Complete, self-contained code enables full reproduction in under ten minutes on a single CPU.
-
-Detecting performance anomalies in enterprise wide area networks (WANs) is critical for
-maintaining service-level agreements and ensuring reliable operations.
-\citet{schummer2024} propose a supervised machine learning framework for this problem,
-making two central claims: non-linear models outperform a linear baseline, and
-feature engineering quality dominates model complexity.
-Because the original dataset is proprietary, a synthetic but statistically realistic
-80{,}640-sample multivariate WAN telemetry dataset is constructed with a 16.0\% anomaly
-rate to reproduce and evaluate these claims.
-
-Temporal feature engineering---rolling statistics, lag features, and multi-horizon
-aggregation windows---is applied to a time-aware 70/30 train/test split.
-Four supervised classifiers are evaluated: Logistic Regression (linear baseline),
-Random Forest, SVM with RBF kernel, and a PyTorch MLP as a deep-learning extension.
-Performance is assessed using Precision-Recall AUC (\prauc), the appropriate
-metric for imbalanced anomaly detection.
-
-All four models achieve \prauc $\approx 0.865$---roughly $5.4\times$ the
-random-classifier baseline of 0.160---confirming that temporal feature engineering
-provides strong predictive signal. All classifiers cluster within 0.013 \prauc
-of each other, supporting the feature-engineering-dominance claim. Notably,
-Logistic Regression achieves the highest \prauc (0.870), slightly exceeding
-Random Forest (0.868) and SVM (0.865), partially contradicting the non-linearity
-claim and suggesting that advantage may require real-world telemetry complexity.
-Complete, reproducible code enables full replication in under ten minutes on a single CPU.
-\end{comment}
-
 The detection of performance anomalies in enterprise wide area networks (WANs) is critical 
 for service providers and large organizations to uphold strict service-level agreements (SLAs) 
 and maintain reliable network operations. Delays in identifying and addressing these anomalies 
@@ -126,46 +53,10 @@ partially contradicts the non-linearity claim and suggests that the advantage of
 models may depend on the complexity of real-world telemetry. The complete, reproducible code 
 enables full replication in under ten minutes on a single machine.
 \end{abstract}
-
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
 \label{sec:intro}
 % ─────────────────────────────────────────────────────────────────────────────
-\begin{comment}
-Enterprise Wide Area Networks (WANs) carry latency-sensitive traffic including
-financial transactions, healthcare data, and cloud-hosted applications.
-Modern WANs generate multivariate telemetry streams---latency, jitter, packet
-loss, throughput, congestion---at sub-minute granularity across hundreds of
-geographically distributed links.
-Despite this data richness, operational monitoring still relies predominantly on
-hand-tuned per-device threshold rules (e.g., ``alert if latency exceeds 200\,ms'')
-that must be manually maintained, generate frequent false alarms under normal
-load spikes, and critically \emph{fail to detect slow, multi-metric degradation
-patterns} that precede SLA breaches~\citep{schummer2024}.
-
-The significance of this problem is growing: misconfigured thresholds in
-large enterprises can leave genuine WAN degradation undetected for hours,
-causing downstream application failures that are expensive to diagnose after
-the fact~\citep{chandola2009}.
-Supervised machine learning offers a principled alternative by learning
-degradation signatures directly from historical telemetry, but systematic
-evaluation of which models, features, and evaluation strategies work best in
-this setting remains limited in the open literature.
-
-\citet{schummer2024} is a high-impact paper addressing
-exactly this gap: it proposes a structured supervised ML framework for WAN
-anomaly detection, evaluates Logistic Regression, Decision Tree, Random Forest,
-and SVM on real enterprise telemetry, and draws two reproducible, testable
-conclusions: (1)~non-linear models outperform a linear baseline, and
-(2)~feature engineering quality dominates model complexity.
-These claims are concrete, the baseline is accessible, and the methodology
-is described in sufficient detail to permit reproduction---making it an ideal
-target for a TinyReproductions study.
-
-This project reproduces these claims at small scale using a synthetic but
-statistically faithful dataset, and extends the comparison with a PyTorch MLP.
-\end{comment}
-
 Enterprise Networks are responsible for transmitting critical, time-sensitive data, 
 including financial transactions, healthcare information, and cloud-based applications. 
 Modern WANs generate detailed telemetry data, such as latency, jitter, packet loss, 
@@ -500,22 +391,6 @@ which likely drives the non-linearity advantage reported in the original paper.
 \section{Conclusion}
 \label{sec:conclusion}
 % ─────────────────────────────────────────────────────────────────────────────
-\begin{comment}
-This reproduction confirms one central claim of Schummer et al.\ (2024) and
-partially challenges another.
-(1)~Supervised ML with temporal feature engineering detects WAN anomalies at
-$\approx$5.4$\times$ the precision of a random classifier (\prauc 0.865 vs.\ 0.160),
-strongly validating that engineered features carry genuine signal.
-(2)~Feature engineering quality is the primary performance driver: all four
-classifiers cluster within 0.013 \prauc of each other, from LR (0.870) to
-MLP (0.857).
-
-The non-linearity claim is \emph{not confirmed}: Logistic Regression achieves the
-\emph{highest} \prauc (0.870), suggesting the advantage is dataset-dependent and
-requires real-world telemetry complexity to emerge. Future work should ablate
-flag-feature leakage, test cross-device generalization, and evaluate on real
-telemetry to determine whether the non-linearity benefit is recoverable.
-\end{comment}
 This project reproduced and extended a machine learning–based anomaly detection 
 framework for enterprise WAN telemetry data. Using a synthetic but statistically 
 realistic dataset, the study evaluated multiple supervised models, including 
@@ -554,5 +429,167 @@ or produce the figures and tables reported in this paper.
 \bibliography{references}
 \bibliographystyle{iclr2026_conference}
 % ─────────────────────────────────────────────────────────────────────────────
+
+% =============================================================================
+\appendix
+% =============================================================================
+
+\section*{Appendix: AI Tools, Resources, and Project Workflow}
+
+\noindent\textbf{Code and Report Repository:}\\
+\url{https://github.com/asbandara/wan_anomaly_repo}\\
+The repository contains all Python source code, LaTeX report source, configuration
+files, generated artifacts (metrics, plots), and unit tests for this project.
+\bigskip
+This appendix provides a transparent, point-by-point account of how AI tools and
+external resources were used throughout the project, from initial planning to
+final submission.
+% -----------------------------------------------------------------------------
+\subsection*{1. Project Planning and Track Selection}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item Reviewed the ECE~57000 course project guidelines to understand the three
+        available tracks (TinyReproductions, Novel Application, Survey).
+  \item Used \textbf{Claude (Anthropic)} to discuss the trade-offs between tracks
+        and clarify the scope and expectations of Track~1 TinyReproductions.
+  \item Decided on Track~1 because it allowed a focused, verifiable contribution
+        with a clear success criterion: reproducing relative performance trends
+        from a published paper.
+  \item Used Claude to brainstorm candidate papers in network anomaly detection,
+        filtering for papers that (a)~used supervised ML, (b)~reported quantitative
+        results in a reproducible format, and (c)~had publicly understandable
+        methodology even without access to the original dataset.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection*{2. Finding and Reviewing the Reference Paper}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item Searched Google Scholar and MDPI for recent (2022--2024) supervised ML
+        papers on network or WAN anomaly detection.
+  \item Identified \citet{schummer2024} (\textit{Machine Learning-Based Network
+        Anomaly Detection: Design, Implementation, and Evaluation}, AI 2024) as
+        the target paper based on its clear methodology, quantitative results
+        table, and relevance to enterprise WAN operations.
+  \item Used Claude to summarize the paper's key claims, methodology (Tukey-IQR
+        labeling, classical ML models), and reported metrics (AUC~$>$~0.9 for RF)
+        to identify what needed to be reproduced.
+  \item Used \textbf{Semantic Scholar} and \textbf{Google Scholar} to find
+        supporting papers on: (a)~SHAP explainability for tabular ML
+        \citep{lundberg2017unified}, (b)~precision-recall metrics for imbalanced
+        classification \citep{davis2006relationship}, and (c)~rolling window
+        feature engineering for time-series anomaly detection.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection*{3. Framework Design and Architecture Decisions}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item Used Claude to design the 4-step modular pipeline architecture:\\
+        \texttt{make\_synthetic\_data.py} $\to$ \texttt{build\_dataset.py}
+        $\to$ \texttt{train\_models.py} $\to$ \texttt{make\_shap.py}.
+  \item All design decisions (module boundaries, config-driven parameters,
+        time-aware splitting) were discussed with Claude and then independently
+        verified and approved before implementation.
+  \item Decided on \texttt{config/config.json} as the single source of truth for
+        all tunable parameters (windows, noise fraction, random seed, train
+        fraction) based on Claude's recommendation for reproducibility.
+  \item Used Claude to advise on the Tukey-IQR groupby-transform pattern\\
+        (\texttt{src/wan\_anomaly/processing/label.py}) the specific pandas API
+        pattern was derived from the official pandas documentation.
+  \item Decided to use PR-AUC (rather than ROC-AUC or accuracy) as the primary
+        metric after discussing class imbalance implications with Claude.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection*{4. Code Development and Implementation}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item \textbf{Synthetic data generator} (\texttt{make\_synthetic\_data.py}):
+        Iterative design with Claude to achieve the target $\sim$16\% anomaly rate
+        using gradual ramp-up/ramp-down injection (not hard steps). Multiple
+        versions were tested and evaluated by running the pipeline end-to-end.
+  \item \textbf{Feature engineering} (\texttt{features.py}): Rolling mean/std/max
+        windows and cyclical time encoding designed with Claude's input; all pandas
+        \texttt{groupby().rolling()} patterns referenced from the pandas
+        documentation and verified by unit tests.
+  \item \textbf{Classical ML models} (\texttt{train.py}): scikit-learn Pipeline,
+        StandardScaler, RandomForestClassifier, LogisticRegression, and SVC
+        constructed per the scikit-learn user guide. Claude assisted in selecting
+        \texttt{class\_weight='balanced'} and \texttt{balanced\_subsample} to
+        handle class imbalance.
+  \item \textbf{PyTorch MLP} (\texttt{mlp\_torch.py}, added in Checkpoint~2):
+        Architecture, \texttt{BCEWithLogitsLoss} with \texttt{pos\_weight}, Adam
+        optimizer, and best-epoch checkpointing were designed in collaboration
+        with Claude. The PyTorch patterns follow the official PyTorch documentation
+        on weighted loss functions.
+  \item \textbf{SHAP explanation} (\texttt{shap\_plots.py}): \texttt{TreeExplainer}
+        usage follows the SHAP library quickstart documentation. Claude assisted
+        in handling the multi-output SHAP array shape and selecting
+        \texttt{tree\_path\_dependent} perturbation mode.
+  \item All code was written from scratch (no copy-paste from external
+        repositories), part of the code written by the auther and got reviewed and 
+        find tunes to align with the main framwork using Claude. Finally, auther has 
+        reviewed all codes and framework to align the contents, code and validated 
+        by running the full pipeline end-to-end.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection*{5. Unit Testing}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item Three pytest test modules were written with Claude's assistance:
+        \texttt{test\_labeling.py}, \texttt{test\_features.py}, and
+        \texttt{test\_split.py}.
+  \item Tests cover: correct \texttt{anomaly} column output, rolling feature
+        column count and row count invariance, label/feature separation, and
+        temporal ordering guarantees of the train/test split.
+  \item All tests were verified to pass on the final codebase.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection*{6. Report Writing}
+% -----------------------------------------------------------------------------
+\begin{itemize}
+  \item The ICLR~2026 LaTeX template (\texttt{iclr2026\_conference.sty}) was used
+        as the document class. Claude assisted with LaTeX formatting, table
+        alignment (\texttt{booktabs}), and figure inclusion.
+  \item All written content — problem framing, methodology description, result
+        analysis, discussion, and conclusions — was authored by the author.
+        Claude was used for proofreading, sentence-level clarity improvements,
+        and checking internal consistency of numbers (e.g., paper Table~1 vs.\
+        \texttt{artifacts/metrics\_table.csv}).
+  \item References were managed in \texttt{references.bib}. Claude assisted
+        in formatting BibTeX entries and checking \texttt{\textbackslash citet}
+        vs.\ \texttt{\textbackslash citep} usage.
+  \item The \texttt{make\_presentation.py} script (using \texttt{python-pptx})
+        was written with Claude's assistance to generate the class presentation
+        programmatically from the final results.
+\end{itemize}
+\begin{comment}
+% -----------------------------------------------------------------------------
+\subsection*{7. AI Tools Summary}
+% -----------------------------------------------------------------------------
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Tool} & \textbf{Provider} & \textbf{Usage} \\
+\midrule
+Claude (Sonnet 4.6) & Anthropic & Architecture design, code scaffolding, \\
+                    &           & LaTeX editing, proofreading \\
+Google Scholar      & Google    & Paper search and citation lookup \\
+Semantic Scholar    & AI2       & Supporting literature discovery \\
+MDPI Open Access    & MDPI      & Access to reference paper (open access) \\
+GitHub Copilot      & GitHub    & Inline code completion (minor use) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{comment}
+\bigskip
+\noindent All experimental design decisions, result interpretation, model selection
+rationale, and final judgements were made by the author. AI tools served as
+productivity aids and were not used to generate experimental results, run
+experiments, or produce the figures and tables reported in this paper.
 
 \end{document}
