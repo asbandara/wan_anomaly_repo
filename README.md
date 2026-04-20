@@ -58,6 +58,32 @@ artifacts/
 
 ---
 
+## Dependencies
+
+**Python**: 3.9 or later (tested on 3.9 and 3.12).
+
+All required packages are listed in `requirements.txt`:
+
+| Package | Version | Purpose |
+|---|---|---|
+| `numpy` | ≥1.24 | Numerical operations, random seed control |
+| `pandas` | ≥2.0 | Telemetry data loading and feature engineering |
+| `scikit-learn` | ≥1.3 | LogReg, Random Forest, SVM pipelines and metrics |
+| `matplotlib` | ≥3.7 | PR-AUC and anomaly-rate comparison plots |
+| `joblib` | ≥1.3 | Model serialization (`.joblib` files) |
+| `pyarrow` | ≥14.0 | Parquet read/write for processed dataset |
+| `torch` | any recent | PyTorch MLP training (`BCEWithLogitsLoss`) |
+| `shap` | ≥0.44 | SHAP TreeExplainer for Random Forest |
+
+Install all dependencies with:
+```bash
+pip install -r requirements.txt
+```
+
+No GPU is required; all experiments run on CPU in 5–10 minutes.
+
+---
+
 ## Quickstart
 
 ```bash
@@ -165,10 +191,10 @@ repositories.
 
 | File | Lines | Description |
 |---|---|---|
-| `scripts/make_synthetic_data.py` | 1–125 | Synthetic WAN telemetry generator with realistic anomaly injection |
+| `scripts/make_synthetic_data.py` | 1–119 | Synthetic WAN telemetry generator with realistic anomaly injection |
 | `scripts/build_dataset.py` | 1–69 | Dataset build pipeline (labeling + feature engineering + label noise) |
-| `scripts/train_models.py` | 1–147 | Model training and evaluation orchestration (classical + MLP) |
-| `scripts/make_shap.py` | 1–86 | SHAP explanation script (bar + beeswarm plots) |
+| `scripts/train_models.py` | 1–146 | Model training and evaluation orchestration (classical + MLP) |
+| `scripts/make_shap.py` | 1–85 | SHAP explanation script (bar + beeswarm plots) |
 | `src/wan_anomaly/processing/label.py` | 1–32 | Tukey-IQR anomaly labeling with device-level grouping |
 | `src/wan_anomaly/processing/features.py` | 1–66 | Rolling window features, lag/delta features, cyclical time features |
 | `src/wan_anomaly/processing/split.py` | 1–11 | Time-aware train/test split |
