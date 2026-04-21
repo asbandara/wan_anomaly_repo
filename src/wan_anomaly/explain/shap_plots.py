@@ -25,6 +25,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Consistent font sizes across all SHAP plots
+_TITLE_FS = 15
+_LABEL_FS = 13
+_TICK_FS  = 11
+
 def _to_2d(shap_values: np.ndarray) -> np.ndarray:
     """
     Ensure SHAP array is (n_samples, n_features).
@@ -63,13 +68,18 @@ def shap_summary_bar(shap_values: np.ndarray, feature_names: list[str], out_png:
     # Sort features by importance descending; take top max_display
     order = np.argsort(imp)[::-1][:max_display]
 
-    plt.figure()
-    plt.bar(range(len(order)), imp[order])
-    plt.xticks(range(len(order)), [feature_names[i] for i in order], rotation=45, ha="right")
-    plt.ylabel("mean(|SHAP|)")
-    plt.title("SHAP Feature Importance (mean |value|)")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(range(len(order)), imp[order])
+    ax.set_xticks(range(len(order)))
+    ax.set_xticklabels(
+        [feature_names[i] for i in order],
+        rotation=45, ha="right", fontsize=_TICK_FS
+    )
+    ax.tick_params(axis="y", labelsize=_TICK_FS)
+    ax.set_ylabel("mean(|SHAP|)", fontsize=_LABEL_FS)
+    ax.set_title("SHAP Feature Importance (mean |value|)", fontsize=_TITLE_FS)
     plt.tight_layout()
-    plt.savefig(out_png, dpi=180)
+    plt.savefig(out_png, dpi=200)
     plt.close()
 
 
@@ -96,7 +106,7 @@ def shap_summary_beeswarm(shap_values: np.ndarray, X: pd.DataFrame, out_png: str
     order = np.argsort(imp)[::-1][:max_display]
     feat_names = X.columns.to_list()
 
-    plt.figure(figsize=(8, max(4, 0.35 * len(order))))
+    fig, ax = plt.subplots(figsize=(9, max(5, 0.42 * len(order))))
     # Reverse y-positions so the most important feature appears at the top
     y_positions = np.arange(len(order))[::-1]
 
@@ -104,12 +114,14 @@ def shap_summary_beeswarm(shap_values: np.ndarray, X: pd.DataFrame, out_png: str
         vals = shap_values[:, idx]
         # Small random vertical jitter prevents overplotting of identical values
         jitter = (np.random.rand(len(vals)) - 0.5) * 0.25
-        plt.scatter(vals, y_positions[yi] + jitter, s=6, alpha=0.5)
+        ax.scatter(vals, y_positions[yi] + jitter, s=10, alpha=0.5)
 
-    plt.yticks(y_positions, [feat_names[i] for i in order])
-    plt.axvline(0, linewidth=1)   # vertical line at SHAP=0 (decision boundary)
-    plt.xlabel("SHAP value")
-    plt.title("SHAP Summary (beeswarm-style)")
+    ax.set_yticks(y_positions)
+    ax.set_yticklabels([feat_names[i] for i in order], fontsize=_TICK_FS)
+    ax.tick_params(axis="x", labelsize=_TICK_FS)
+    ax.axvline(0, linewidth=1)   # vertical line at SHAP=0 (decision boundary)
+    ax.set_xlabel("SHAP value", fontsize=_LABEL_FS)
+    ax.set_title("SHAP Summary (beeswarm-style)", fontsize=_TITLE_FS)
     plt.tight_layout()
-    plt.savefig(out_png, dpi=180)
+    plt.savefig(out_png, dpi=200)
     plt.close()

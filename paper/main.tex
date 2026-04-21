@@ -51,8 +51,10 @@ feature engineering quality dominates model complexity. Notably, Logistic Regres
 highest PR-AUC (0.870), marginally surpassing Random Forest (0.868) and SVM (0.865), which 
 partially contradicts the non-linearity claim and suggests that the advantage of non-linear 
 models may depend on the complexity of real-world telemetry. The complete, reproducible code 
-enables full replication in under ten minutes on a single machine.
+enables full replication in under ten minutes on a single machine.\\
+\href{https://github.com/asbandara/wan_anomaly_repo}{Code and Latex Files}
 \end{abstract}
+
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
 \label{sec:intro}
@@ -303,8 +305,8 @@ temporal feature engineering carries strong predictive signal regardless of
 model choice and validating the core premise of the supervised framework.
 
 \paragraph{Finding 2 — Feature engineering dominates model complexity.}
-All four models lie within 0.013 \prauc of each other---from the simplest
-linear model (LR: 0.870) to a neural network (MLP: 0.857)---directly
+All four models lie within 0.013 \prauc of each other, from the simplest
+linear model (LR: 0.870) to a neural network (MLP: 0.857), directly
 corroborating Schummer et al.'s central claim that feature representation,
 not model family, is the binding performance constraint.
 
@@ -476,8 +478,8 @@ final submission.
         to identify what needed to be reproduced.
   \item Used \textbf{Semantic Scholar} and \textbf{Google Scholar} to find
         supporting papers on: (a)~SHAP explainability for tabular ML
-        \citep{lundberg2017unified}, (b)~precision-recall metrics for imbalanced
-        classification \citep{davis2006relationship}, and (c)~rolling window
+        \citep{lundberg2017}, (b)~precision-recall metrics for imbalanced
+        classification \citep{davis2006}, and (c)~rolling window
         feature engineering for time-series anomaly detection.
 \end{itemize}
 
@@ -518,7 +520,7 @@ final submission.
         constructed per the scikit-learn user guide. Claude assisted in selecting
         \texttt{class\_weight='balanced'} and \texttt{balanced\_subsample} to
         handle class imbalance.
-  \item \textbf{PyTorch MLP} (\texttt{mlp\_torch.py}, added in Checkpoint~2):
+  \item \textbf{PyTorch MLP} (\texttt{mlp\_torch.py}, added in Checkpoint~2):\\
         Architecture, \texttt{BCEWithLogitsLoss} with \texttt{pos\_weight}, Adam
         optimizer, and best-epoch checkpointing were designed in collaboration
         with Claude. The PyTorch patterns follow the official PyTorch documentation
@@ -528,8 +530,8 @@ final submission.
         in handling the multi-output SHAP array shape and selecting
         \texttt{tree\_path\_dependent} perturbation mode.
   \item All code was written from scratch (no copy-paste from external
-        repositories), part of the code written by the auther and got reviewed and 
-        find tunes to align with the main framwork using Claude. Finally, auther has 
+        repositories), part of the code written by the author and got reviewed and
+        fine-tuned to align with the main framework using Claude. Finally, the author has
         reviewed all codes and framework to align the contents, code and validated 
         by running the full pipeline end-to-end.
 \end{itemize}
