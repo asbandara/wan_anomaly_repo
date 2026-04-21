@@ -52,7 +52,7 @@ highest PR-AUC (0.870), marginally surpassing Random Forest (0.868) and SVM (0.8
 partially contradicts the non-linearity claim and suggests that the advantage of non-linear 
 models may depend on the complexity of real-world telemetry. The complete, reproducible code 
 enables full replication in under ten minutes on a single machine.\\
-\href{https://github.com/asbandara/wan_anomaly_repo}{Code and Latex Files}
+\href{https://github.com/asbandara/wan_anomaly_repo}{Code, Latex Files, Results, and Plots}
 \end{abstract}
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -327,7 +327,7 @@ and require the complexity of real enterprise telemetry to emerge.
 Figure~\ref{fig:shap} shows SHAP TreeExplainer values for the Random Forest model.
 Long-horizon rolling statistics (60\,min and 6\,h means/maxima of latency and
 loss metrics) are the top contributors, confirming that \emph{sustained}
-degradation patterns---not instantaneous spikes---are the primary discriminative
+degradation patterns not instantaneous spikes are the primary discriminative
 signal.
 This aligns with the paper's description of slow SLA degradation as the hardest
 failure mode for threshold-based monitors.
