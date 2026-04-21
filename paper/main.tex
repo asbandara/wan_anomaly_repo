@@ -203,7 +203,7 @@ where $m$ indexes the metric and $d$ the device group.
 A sample is labeled anomalous if at least one flag fires
 (\texttt{min\_breach\_metrics}$=1$).
 Per-device grouping is essential: a 200\,ms latency reading is anomalous for
-a fiber link but normal for an LTE link---global thresholds produce misleading
+a fiber link but normal for an LTE link, global thresholds produce misleading
 labels.
 This yields a label distribution of 84.0\% normal / 16.0\% anomalous.
 
@@ -439,10 +439,10 @@ or produce the figures and tables reported in this paper.
 \section*{Appendix: AI Tools, Resources, and Project Workflow}
 
 \noindent\textbf{Code and Report Repository:}\\
-\url{https://github.com/asbandara/wan_anomaly_repo}\\
+\href{https://github.com/asbandara/wan_anomaly_repo}{Gihub Repository with Codes, Notebooks, and latex files}\\
 The repository contains all Python source code, LaTeX report source, configuration
 files, generated artifacts (metrics, plots), and unit tests for this project.
-\bigskip
+%\bigskip
 This appendix provides a transparent, point-by-point account of how AI tools and
 external resources were used throughout the project, from initial planning to
 final submission.
