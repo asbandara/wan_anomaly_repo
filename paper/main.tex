@@ -457,7 +457,7 @@ final submission.
   \item Decided on Track~1 because it allowed a focused, verifiable contribution
         with a clear success criterion: reproducing relative performance trends
         from a published paper.
-  \item Used Claude to brainstorm candidate papers in network anomaly detection,
+  \item Brainstormed the papers in network anomaly detection,
         filtering for papers that (a)~used supervised ML, (b)~reported quantitative
         results in a reproducible format, and (c)~had publicly understandable
         methodology even without access to the original dataset.
@@ -473,7 +473,7 @@ final submission.
         Anomaly Detection: Design, Implementation, and Evaluation}, AI 2024) as
         the target paper based on its clear methodology, quantitative results
         table, and relevance to enterprise WAN operations.
-  \item Used Claude to summarize the paper's key claims, methodology (Tukey-IQR
+  \item Used AI-Tool to summarize the paper's key claims, methodology (Tukey-IQR
         labeling, classical ML models), and reported metrics (AUC~$>$~0.9 for RF)
         to identify what needed to be reproduced.
   \item Used \textbf{Semantic Scholar} and \textbf{Google Scholar} to find
@@ -508,7 +508,7 @@ final submission.
 % -----------------------------------------------------------------------------
 \begin{itemize}
   \item \textbf{Synthetic data generator} (\texttt{make\_synthetic\_data.py}):
-        Iterative design with Claude to achieve the target $\sim$16\% anomaly rate
+        Iterative design to achieve the target $\sim$16\% anomaly rate
         using gradual ramp-up/ramp-down injection (not hard steps). Multiple
         versions were tested and evaluated by running the pipeline end-to-end.
   \item \textbf{Feature engineering} (\texttt{features.py}): Rolling mean/std/max
